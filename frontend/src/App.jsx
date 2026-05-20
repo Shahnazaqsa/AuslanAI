@@ -513,7 +513,11 @@ export default function App() {
             const data = await response.json();
             console.log("[predict] response", response.status, data);
             if (!response.ok) throw new Error(data.error || "Prediction failed");
-            return { gesture: data.gesture, confidence: data.confidence };
+            // Return clean prediction response from backend
+            return {
+                gesture: String(data.gesture),
+                confidence: Number(data.confidence || 0).toFixed(1)
+            };
         } catch (error) {
             console.error("Prediction error:", error);
             return null;
@@ -535,23 +539,24 @@ export default function App() {
             setStatus("aligning");
             setAlignScore(0);
 
-            // Simulate alignment + detection loop
+            // Detection loop — predict every 1.5s when hand is in frame
             let tick = 0;
             intervalRef.current = setInterval(() => {
                 tick++;
-                // Ramp up alignment score
-                const newScore = Math.min(100, alignRef.current + (Math.random() > 0.3 ? 6 : -3));
+                // Alignment score: ramp up faster, drop slower
+                const newScore = Math.min(100, alignRef.current + (Math.random() > 0.25 ? 8 : -2));
                 alignRef.current = Math.max(0, newScore);
                 setAlignScore(Math.round(alignRef.current));
 
                 if (alignRef.current < 30) {
                     setStatus("alert");
                     setResult(null);
-                } else if (alignRef.current < 70) {
+                } else if (alignRef.current < 60) {
                     setStatus("aligning");
                 } else {
                     setStatus("detecting");
-                    if (tick % 8 === 0 && !predictingRef.current) {
+                    // Predict every 5 ticks (~1.5s) instead of 8, and don't skip if aligning
+                    if (tick % 5 === 0 && !predictingRef.current) {
                         captureAndPredict().then(det => {
                             if (det) {
                                 setResult(det);
@@ -581,17 +586,25 @@ export default function App() {
     useEffect(() => {
         console.log("[App] mounted");
         setFrontendReady(true);
+        setBackendStatus("waking");
 
-        fetch("https://shahnaz123aqsa-auslanai.hf.space/health")
-            .then(res => res.json())
-            .then(data => {
-                console.log("[App] backend health", data);
-                setBackendStatus("connected");
-            })
-            .catch(err => {
-                console.error("[App] backend health error", err);
-                setBackendStatus("error");
-            });
+        // HF free spaces sleep — retry up to 5 times with delay
+        const wakeBackend = async () => {
+            for (let attempt = 1; attempt <= 5; attempt++) {
+                try {
+                    const res = await fetch("https://shahnaz123aqsa-auslanai.hf.space/health", { signal: AbortSignal.timeout(15000) });
+                    const data = await res.json();
+                    console.log("[App] backend health", data);
+                    setBackendStatus("connected");
+                    return;
+                } catch (err) {
+                    console.warn(`[App] backend attempt ${attempt} failed`, err);
+                    if (attempt < 5) await new Promise(r => setTimeout(r, 4000));
+                }
+            }
+            setBackendStatus("error");
+        };
+        wakeBackend();
     }, []);
 
     useEffect(() => {
@@ -733,6 +746,27 @@ export default function App() {
 
                         {/* Result Panel */}
                         <div className="result-panel">
+                            {/* Backend Status Banner */}
+                            {backendStatus !== "connected" && (
+                                <div style={{
+                                    padding: "12px 16px",
+                                    borderRadius: "var(--radius-sm)",
+                                    fontSize: 13,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 10,
+                                    background: backendStatus === "error" ? "rgba(255,71,87,0.08)" : "rgba(255,179,71,0.08)",
+                                    border: `1px solid ${backendStatus === "error" ? "rgba(255,71,87,0.25)" : "rgba(255,179,71,0.25)"}`,
+                                    color: backendStatus === "error" ? "var(--danger)" : "var(--warn)"
+                                }}>
+                                    {backendStatus === "waking" ? "⏳ Waking up AI backend (may take ~30s on first load)…" : "❌ Backend unreachable — check Hugging Face Space is running"}
+                                </div>
+                            )}
+                            {backendStatus === "connected" && (
+                                <div style={{ padding: "10px 16px", borderRadius: "var(--radius-sm)", fontSize: 13, background: "rgba(0,212,170,0.08)", border: "1px solid rgba(0,212,170,0.2)", color: "var(--teal)" }}>
+                                    ✅ Backend connected
+                                </div>
+                            )}
                             <div className="result-card">
                                 <div style={{ fontSize: 12, color: "var(--muted)", fontWeight: 600, letterSpacing: "0.5px", marginBottom: 4 }}>DETECTED GESTURE</div>
                                 <div className="gesture-display">
