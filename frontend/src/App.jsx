@@ -394,7 +394,10 @@ const css = `
   @media (max-width: 900px) {
     nav { padding: 0 24px; flex-wrap: wrap; justify-content: center; height: auto; }
     .nav-links { gap: 18px; justify-content: center; }
-    .nav-cta { width: 100%; max-width: 280px; margin-top: 14px; }
+    .nav-cta {
+      width: 100%; max-width: 220px; margin-top: 14px;
+      padding: 8px 20px; font-size: 13px;
+    }
     .hero { padding: 100px 18px 64px; }
     .hero-stats { gap: 24px; margin-top: 56px; }
     .hero h1 { font-size: clamp(38px, 10vw, 64px); }
@@ -453,7 +456,8 @@ const HandSVG = ({ aligned }) => (
 );
 
 // ── Backend API endpoint ────────────────────────────────────
-const API_URL = "http://localhost:5000/predict";
+const API_URL = "https://auslanai.pythonanywhere.com/predict";
+// const API_URL = "http://localhost:5000/predict";
 
 // ── Main App ────────────────────────────────────────────────
 export default function App() {
@@ -573,7 +577,7 @@ export default function App() {
         console.log("[App] mounted");
         setFrontendReady(true);
 
-        fetch("http://localhost:5000/health")
+        fetch("https://auslanai.pythonanywhere.com/health")
             .then(res => res.json())
             .then(data => {
                 console.log("[App] backend health", data);
