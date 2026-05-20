@@ -316,6 +316,7 @@ const css = `
 
   /* ── Practice Mode ── */
   .practice-section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+  .practice-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
   .practice-card {
     background: var(--card); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 48px; text-align: center;
@@ -407,6 +408,8 @@ const css = `
     .section-title { text-align: center; }
     .section-sub { max-width: 100%; margin-left: auto; margin-right: auto; }
     .practice-card, .gesture-card, .history-card, .camera-card, .result-card { padding: 20px; }
+    .practice-layout { grid-template-columns: 1fr; }
+    .practice-card { width: 100%; }
     .practice-target { font-size: clamp(72px, 15vw, 96px); }
     .score-row { gap: 20px; }
     .feature-card { padding: 20px; }
@@ -625,7 +628,6 @@ export default function App() {
                     <li><a href="#" onClick={() => setPage("learn")}>Learn</a></li>
                     <li><a href="#" onClick={() => setPage("practice")}>Practice</a></li>
                 </ul>
-                <button className="nav-cta" onClick={() => setPage("demo")}>Try Live Demo →</button>
             </nav>
 
             {/* ── HOME PAGE ── */}
@@ -839,7 +841,7 @@ export default function App() {
                     <div className="section-title">Test your skills.</div>
                     <p className="section-sub">Start your camera, perform the requested gesture, and hit Check!</p>
 
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 24, alignItems: "start" }}>
+                    <div className="practice-layout">
                         <div className="practice-card">
                             <div className="practice-prompt">Show this gesture:</div>
                             <div className="practice-target">{practiceTarget}</div>
