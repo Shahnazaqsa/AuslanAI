@@ -459,7 +459,7 @@ const HandSVG = ({ aligned }) => (
 );
 
 // ── Backend API endpoint ────────────────────────────────────
-const API_URL = "https://auslanai.pythonanywhere.com/predict";
+const API_URL = "https://shahnaz123aqsa-auslanai.hf.space/predict";
 // const API_URL = "http://localhost:5000/predict";
 
 // ── Main App ────────────────────────────────────────────────
@@ -506,7 +506,9 @@ export default function App() {
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ image: imageData }),
+                body: JSON.stringify({
+                    image: imageData.split(",")[1]
+                }),
             });
             const data = await response.json();
             console.log("[predict] response", response.status, data);
@@ -580,7 +582,7 @@ export default function App() {
         console.log("[App] mounted");
         setFrontendReady(true);
 
-        fetch("https://auslanai.pythonanywhere.com/health")
+        fetch("https://shahnaz123aqsa-auslanai.hf.space/health")
             .then(res => res.json())
             .then(data => {
                 console.log("[App] backend health", data);
