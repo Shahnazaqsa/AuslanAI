@@ -390,6 +390,42 @@ const css = `
   .history-gesture { font-weight: 700; color: var(--teal); font-family: var(--font-head); }
   .history-conf { color: var(--muted); font-size: 12px; }
   .history-time { color: var(--muted); font-size: 11px; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; flex-wrap: wrap; justify-content: center; height: auto; }
+    .nav-links { gap: 18px; justify-content: center; }
+    .nav-cta { width: 100%; max-width: 280px; margin-top: 14px; }
+    .hero { padding: 100px 18px 64px; }
+    .hero-stats { gap: 24px; margin-top: 56px; }
+    .hero h1 { font-size: clamp(38px, 10vw, 64px); }
+    .hero p { max-width: 100%; margin-bottom: 36px; }
+    .hero-btns { gap: 12px; }
+    .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+    .section-title { text-align: center; }
+    .section-sub { max-width: 100%; margin-left: auto; margin-right: auto; }
+    .practice-card, .gesture-card, .history-card, .camera-card, .result-card { padding: 20px; }
+    .practice-target { font-size: clamp(72px, 15vw, 96px); }
+    .score-row { gap: 20px; }
+    .feature-card { padding: 20px; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { gap: 12px; }
+    .nav-links a { font-size: 13px; }
+    .hero { padding: 90px 16px 48px; }
+    .hero-badge { margin-bottom: 24px; }
+    .hero h1 { line-height: 1.1; }
+    .hero p { font-size: 15px; }
+    .hero-stats { flex-direction: column; align-items: center; gap: 18px; }
+    .demo-section, .gestures-section, .practice-section { padding-left: 16px; padding-right: 16px; }
+    .tabs { width: 100%; flex-wrap: wrap; }
+    .tab { flex: 1 1 auto; text-align: center; }
+    .gesture-card { padding: 20px; }
+    .practice-card { padding: 28px 20px; }
+    .practice-prompt { font-size: 16px; }
+    .score-item { flex: 1 1 45%; }
+    footer { padding: 32px 16px; }
+  }
 `;
 
 // ── Gesture data ────────────────────────────────────────────
@@ -578,7 +614,7 @@ export default function App() {
             <canvas ref={canvasRef} style={{ display: "none" }} />
             {/* NAV */}
             <nav>
-                <div className="nav-logo">SignSense</div>
+                <div className="nav-logo">AuslanAI</div>
                 <ul className="nav-links">
                     <li><a href="#" onClick={() => setPage("home")}>Home</a></li>
                     <li><a href="#" onClick={() => setPage("demo")}>Demo</a></li>
@@ -632,7 +668,7 @@ export default function App() {
                     </section>
 
                     <footer>
-                        <span className="footer-logo">SignSense</span>
+                        <span className="footer-logo">AuslanAI</span>
                         <p>Built by Shahnaz Aqsa Qambrani, Faiza Ahmed Dahri & Shabana Bhatti</p>
                         <p style={{ marginTop: 8 }}>University of Sufism and Modern Sciences, Bhitshah · 2025</p>
                     </footer>
