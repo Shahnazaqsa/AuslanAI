@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
-// ── Palette & tokens ──────────────────────────────────────────
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
@@ -37,12 +36,10 @@ const css = `
     overflow-x: hidden;
   }
 
-  /* ── Scrollbar ── */
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--teal2); border-radius: 3px; }
 
-  /* ── Noise overlay ── */
   body::before {
     content: '';
     position: fixed; inset: 0; z-index: 0;
@@ -50,7 +47,6 @@ const css = `
     pointer-events: none;
   }
 
-  /* ── Glow blob ── */
   .glow-blob {
     position: fixed; border-radius: 50%; filter: blur(120px);
     pointer-events: none; z-index: 0;
@@ -58,7 +54,6 @@ const css = `
   .glow-blob-1 { width: 500px; height: 500px; background: rgba(0,212,170,0.08); top: -100px; right: -100px; }
   .glow-blob-2 { width: 400px; height: 400px; background: rgba(0,184,148,0.06); bottom: 100px; left: -100px; }
 
-  /* ── Nav ── */
   nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -67,13 +62,16 @@ const css = `
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
   }
-  .nav-logo {
+  .nav-logo { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .nav-logo-svg { width: 36px; height: 36px; }
+  .nav-logo-text {
     font-family: var(--font-head);
     font-size: 22px; font-weight: 800;
     background: linear-gradient(135deg, var(--teal), #7FFFDC);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     letter-spacing: -0.5px;
   }
+  .nav-logo-text span { -webkit-text-fill-color: var(--teal); }
   .nav-links { display: flex; gap: 36px; list-style: none; }
   .nav-links a {
     color: var(--muted); text-decoration: none; font-size: 14px;
@@ -88,10 +86,8 @@ const css = `
   }
   .nav-cta:hover { background: var(--teal2); transform: translateY(-1px); }
 
-  /* ── Sections ── */
   section { position: relative; z-index: 1; }
 
-  /* ── Hero ── */
   .hero {
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
@@ -149,7 +145,6 @@ const css = `
   }
   .stat-lbl { font-size: 13px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
 
-  /* ── Demo Section ── */
   .demo-section {
     padding: 80px 24px; max-width: 1100px; margin: 0 auto;
   }
@@ -168,7 +163,6 @@ const css = `
   }
   @media (max-width: 900px) { .demo-container { grid-template-columns: 1fr; } }
 
-  /* Camera card */
   .camera-card {
     background: var(--card); border: 1px solid var(--border);
     border-radius: var(--radius); overflow: hidden; position: relative;
@@ -212,15 +206,6 @@ const css = `
     background: rgba(0,0,0,0.5);
   }
 
-  /* Hand outline guide */
-  .hand-guide {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    pointer-events: none;
-  }
-  .hand-outline-svg { width: 55%; max-width: 220px; opacity: 0.25; transition: opacity 0.4s; }
-  .hand-outline-svg.aligned { opacity: 0; }
-
-  /* Alignment indicator */
   .align-bar {
     position: absolute; bottom: 0; left: 0; right: 0;
     padding: 12px 16px;
@@ -231,7 +216,6 @@ const css = `
   .align-progress { flex: 1; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
   .align-fill { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; }
 
-  /* Result panel */
   .result-panel {
     display: flex; flex-direction: column; gap: 16px;
   }
@@ -273,7 +257,6 @@ const css = `
   .status-badge.detecting { background: rgba(0,212,170,0.15); color: var(--teal); }
   .status-badge.alert { background: rgba(255,71,87,0.15); color: var(--danger); }
 
-  /* Alert box */
   .alert-box {
     background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.25);
     border-radius: var(--radius-sm); padding: 14px 16px;
@@ -281,7 +264,6 @@ const css = `
   }
   .alert-box.show { display: flex; }
 
-  /* Controls */
   .cam-btn {
     width: 100%; padding: 14px; border-radius: var(--radius-sm);
     font-family: var(--font-body); font-size: 14px; font-weight: 600;
@@ -293,9 +275,8 @@ const css = `
   .cam-btn.stop { background: rgba(255,71,87,0.15); color: var(--danger); border: 1px solid rgba(255,71,87,0.3); }
   .cam-btn.stop:hover { background: rgba(255,71,87,0.25); }
 
-  /* ── Gestures Library ── */
   .gestures-section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
-  .gestures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .gestures-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
   .gesture-card {
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 28px 24px; text-align: center; cursor: pointer;
@@ -309,12 +290,11 @@ const css = `
   .gesture-card:hover { border-color: var(--teal); transform: translateY(-4px); }
   .gesture-card:hover::before { opacity: 1; }
   .gesture-card.active { border-color: var(--teal); background: rgba(0,212,170,0.05); }
-  .gesture-emoji { font-size: 56px; line-height: 1; margin-bottom: 16px; display: block; }
-  .gesture-num { font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--teal); }
-  .gesture-name { font-size: 14px; color: var(--muted); margin-top: 4px; }
-  .gesture-tip { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; opacity: 0.7; }
+  .gesture-emoji { font-size: 48px; line-height: 1; margin-bottom: 12px; display: block; }
+  .gesture-num { font-family: var(--font-head); font-size: 28px; font-weight: 800; color: var(--teal); }
+  .gesture-name { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .gesture-tip { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; opacity: 0.7; }
 
-  /* ── Practice Mode ── */
   .practice-section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
   .practice-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
   .practice-card {
@@ -338,7 +318,6 @@ const css = `
   .score-val { font-family: var(--font-head); font-size: 40px; font-weight: 800; color: var(--teal); }
   .score-lbl { font-size: 13px; color: var(--muted); }
 
-  /* ── Features Grid ── */
   .features-section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
   .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 56px; }
   .feature-card {
@@ -354,20 +333,18 @@ const css = `
   .feature-card h3 { font-family: var(--font-head); font-size: 18px; font-weight: 700; margin-bottom: 10px; }
   .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
 
-  /* ── Footer ── */
   footer {
     border-top: 1px solid var(--border); padding: 48px 24px;
     text-align: center; color: var(--muted); font-size: 14px;
     position: relative; z-index: 1;
   }
-  .footer-logo {
+  .footer-logo-wrap { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+  .footer-logo-text {
     font-family: var(--font-head); font-size: 20px; font-weight: 800;
     background: linear-gradient(135deg, var(--teal), #7FFFDC);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    margin-bottom: 16px; display: block;
   }
 
-  /* ── Tab switcher ── */
   .tabs { display: flex; gap: 4px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px; margin-bottom: 40px; width: fit-content; }
   .tab {
     padding: 9px 22px; border-radius: 8px; font-size: 14px; font-weight: 500;
@@ -376,7 +353,6 @@ const css = `
   }
   .tab.active { background: var(--teal); color: #000; font-weight: 600; }
 
-  /* ── History Log ── */
   .history-card {
     background: var(--card); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 20px;
@@ -392,13 +368,14 @@ const css = `
   .history-conf { color: var(--muted); font-size: 12px; }
   .history-time { color: var(--muted); font-size: 11px; }
 
+  /* Practice auto-detect flash */
+  @keyframes flashCorrect { 0%,100%{border-color:var(--border)} 50%{border-color:var(--teal)} }
+  .practice-card.flash-correct { animation: flashCorrect 0.5s ease; }
+
   @media (max-width: 900px) {
     nav { padding: 0 24px; flex-wrap: wrap; justify-content: center; height: auto; }
     .nav-links { gap: 18px; justify-content: center; }
-    .nav-cta {
-      width: 100%; max-width: 220px; margin-top: 14px;
-      padding: 8px 20px; font-size: 13px;
-    }
+    .nav-cta { width: 100%; max-width: 220px; margin-top: 14px; padding: 8px 20px; font-size: 13px; }
     .hero { padding: 100px 18px 64px; }
     .hero-stats { gap: 24px; margin-top: 56px; }
     .hero h1 { font-size: clamp(38px, 10vw, 64px); }
@@ -426,7 +403,7 @@ const css = `
     .demo-section, .gestures-section, .practice-section { padding-left: 16px; padding-right: 16px; }
     .tabs { width: 100%; flex-wrap: wrap; }
     .tab { flex: 1 1 auto; text-align: center; }
-    .gesture-card { padding: 20px; }
+    .gesture-card { padding: 16px; }
     .practice-card { padding: 28px 20px; }
     .practice-prompt { font-size: 16px; }
     .score-item { flex: 1 1 45%; }
@@ -434,11 +411,14 @@ const css = `
   }
 `;
 
-// ── Gesture data ────────────────────────────────────────────
+// ── Gesture data — American digits 0–5 ─────────────────────
 const GESTURES = [
-    { num: "0", emoji: "✊", name: "Zero", tip: "Closed fist — all fingers curled in", color: "#00D4AA" },
+    { num: "0", emoji: "👌", name: "Zero", tip: "Thumb and index finger form a circle, other fingers extended", color: "#00D4AA" },
     { num: "1", emoji: "☝️", name: "One", tip: "Index finger pointing up, others closed", color: "#7FFFDC" },
     { num: "2", emoji: "✌️", name: "Two", tip: "Index + middle finger up (V sign)", color: "#00B894" },
+    { num: "3", emoji: "🤟", name: "Three", tip: "Thumb, index, and middle finger extended", color: "#00D4AA" },
+    { num: "4", emoji: "🖐", name: "Four", tip: "Four fingers extended, thumb tucked in", color: "#7FFFDC" },
+    { num: "5", emoji: "✋", name: "Five", tip: "All five fingers spread open", color: "#00B894" },
 ];
 
 const STATUS = {
@@ -448,19 +428,29 @@ const STATUS = {
     alert: { label: "Hand not detected", cls: "alert" },
 };
 
-// ── Hand SVG outline ────────────────────────────────────────
-const HandSVG = ({ aligned }) => (
-    <svg className={`hand-outline-svg${aligned ? " aligned" : ""}`} viewBox="0 0 160 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M80 180 C50 180 30 160 28 130 L22 80 C20 68 28 60 38 62 L40 62 L40 40 C40 30 48 24 56 26 C58 18 66 14 74 18 C76 10 86 8 92 14 C98 8 108 12 108 22 L108 62 C118 60 126 68 124 80 L118 130 C116 160 110 180 80 180Z" stroke="#00D4AA" strokeWidth="2.5" fill="rgba(0,212,170,0.06)" strokeLinejoin="round" />
-        <line x1="56" y1="26" x2="56" y2="62" stroke="#00D4AA" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.5" />
-        <line x1="74" y1="18" x2="74" y2="62" stroke="#00D4AA" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.5" />
-        <line x1="92" y1="14" x2="92" y2="62" stroke="#00D4AA" strokeWidth="1.5" strokeDasharray="4 3" opacity="0.5" />
+// ── Logo SVG ────────────────────────────────────────────────
+const LogoSVG = ({ size = 36 }) => (
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="9" fill="rgba(0,212,170,0.12)" stroke="rgba(0,212,170,0.35)" strokeWidth="1" />
+        {/* Hand outline */}
+        <path
+            d="M18 29 C12 29 8 25 7.5 20 L6 10 C5.7 7.5 7.5 6 9.5 6.3 L9.5 3.5 C9.5 1.8 11 1 12.3 1.5 C12.7 -0.2 14.5 -0.8 15.8 0.5 C16.2 -1 17.8 -1.3 18.8 0 C19.8 -1.3 21.5 -0.8 21.5 1 L21.5 6.3 C23.5 6 25.3 7.5 25 10 L23.5 20 C23 25 24 29 18 29Z"
+            stroke="#00D4AA" strokeWidth="1.5" strokeLinejoin="round"
+            fill="rgba(0,212,170,0.08)"
+            transform="translate(0, 3)"
+        />
+        {/* Neural dots */}
+        <circle cx="10" cy="24" r="1.5" fill="#00D4AA" opacity="0.6" />
+        <circle cx="26" cy="24" r="1.5" fill="#00D4AA" opacity="0.6" />
+        <circle cx="18" cy="31" r="1.5" fill="#00D4AA" opacity="0.6" />
+        <line x1="10" y1="24" x2="18" y2="31" stroke="#00D4AA" strokeWidth="0.75" opacity="0.35" />
+        <line x1="26" y1="24" x2="18" y2="31" stroke="#00D4AA" strokeWidth="0.75" opacity="0.35" />
+        <line x1="10" y1="24" x2="26" y2="24" stroke="#00D4AA" strokeWidth="0.75" opacity="0.35" />
     </svg>
 );
 
 // ── Backend API endpoint ────────────────────────────────────
 const API_URL = "https://shahnaz123aqsa-auslanai.hf.space/predict";
-// const API_URL = "http://localhost:5000/predict";
 
 // ── Main App ────────────────────────────────────────────────
 export default function App() {
@@ -473,6 +463,7 @@ export default function App() {
     const [practiceTarget, setPracticeTarget] = useState("1");
     const [practiceScore, setPracticeScore] = useState({ correct: 0, total: 0 });
     const [practiceFeedback, setPracticeFeedback] = useState("");
+    const [practiceFlash, setPracticeFlash] = useState(false);
     const [activeGesture, setActiveGesture] = useState(null);
 
     const videoRef = useRef(null);
@@ -481,6 +472,8 @@ export default function App() {
     const intervalRef = useRef(null);
     const alignRef = useRef(0);
     const predictingRef = useRef(false);
+    // Practice: track last checked gesture to avoid double-counting
+    const lastCheckedRef = useRef(null);
 
     const [predicting, setPredicting] = useState(false);
     const [backendStatus, setBackendStatus] = useState("unknown");
@@ -506,17 +499,14 @@ export default function App() {
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    image: imageData.split(",")[1]
-                }),
+                body: JSON.stringify({ image: imageData.split(",")[1] }),
             });
             const data = await response.json();
             console.log("[predict] response", response.status, data);
             if (!response.ok) throw new Error(data.error || "Prediction failed");
-            // Return clean prediction response from backend
             return {
                 gesture: String(data.gesture),
-                confidence: Number(data.confidence || 0).toFixed(1)
+                confidence: Number(data.confidence || 0).toFixed(1),
             };
         } catch (error) {
             console.error("Prediction error:", error);
@@ -527,23 +517,27 @@ export default function App() {
         }
     }, []);
 
-    // Start camera
+    // We need practiceTarget inside the interval — use a ref
+    const practiceTargetRef = useRef(practiceTarget);
+    useEffect(() => { practiceTargetRef.current = practiceTarget; }, [practiceTarget]);
+
     const startCamera = useCallback(async () => {
         console.log("[startCamera] starting camera");
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: "user" } });
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 640, height: 480, facingMode: "user" },
+            });
             console.log("[startCamera] got stream", stream);
             streamRef.current = stream;
             if (videoRef.current) videoRef.current.srcObject = stream;
             setCamOn(true);
             setStatus("aligning");
             setAlignScore(0);
+            lastCheckedRef.current = null;
 
-            // Detection loop — predict every 1.5s when hand is in frame
             let tick = 0;
             intervalRef.current = setInterval(() => {
                 tick++;
-                // Alignment score: ramp up faster, drop slower
                 const newScore = Math.min(100, alignRef.current + (Math.random() > 0.25 ? 8 : -2));
                 alignRef.current = Math.max(0, newScore);
                 setAlignScore(Math.round(alignRef.current));
@@ -555,12 +549,28 @@ export default function App() {
                     setStatus("aligning");
                 } else {
                     setStatus("detecting");
-                    // Predict every 5 ticks (~1.5s) instead of 8, and don't skip if aligning
                     if (tick % 5 === 0 && !predictingRef.current) {
                         captureAndPredict().then(det => {
                             if (det) {
                                 setResult(det);
                                 setHistory(h => [{ ...det, time: new Date().toLocaleTimeString() }, ...h.slice(0, 9)]);
+
+                                // ── Auto-check for Practice page ──────────────
+                                const target = practiceTargetRef.current;
+                                if (det.gesture === target && lastCheckedRef.current !== target + "_" + det.gesture + "_" + tick) {
+                                    lastCheckedRef.current = target + "_" + det.gesture + "_" + tick;
+                                    setPracticeFeedback("✓ Correct! Well done!");
+                                    setPracticeFlash(true);
+                                    setPracticeScore(s => ({ correct: s.correct + 1, total: s.total + 1 }));
+                                    setTimeout(() => {
+                                        const others = ["0", "1", "2", "3", "4", "5"].filter(g => g !== target);
+                                        const next = others[Math.floor(Math.random() * others.length)];
+                                        setPracticeTarget(next);
+                                        setPracticeFeedback("");
+                                        setPracticeFlash(false);
+                                        lastCheckedRef.current = null;
+                                    }, 1500);
+                                }
                             }
                         });
                     }
@@ -570,7 +580,7 @@ export default function App() {
             console.error("[startCamera] error", error);
             alert("Camera permission denied or unavailable. Please allow camera access.");
         }
-    }, []);
+    }, [captureAndPredict]);
 
     const stopCamera = useCallback(() => {
         streamRef.current?.getTracks().forEach(t => t.stop());
@@ -588,7 +598,6 @@ export default function App() {
         setFrontendReady(true);
         setBackendStatus("waking");
 
-        // HF free spaces sleep — retry up to 5 times with delay
         const wakeBackend = async () => {
             for (let attempt = 1; attempt <= 5; attempt++) {
                 try {
@@ -613,30 +622,24 @@ export default function App() {
         }
     }, [camOn]);
 
-    // Practice check
-    const checkPractice = () => {
-        if (!result) return;
-        const correct = result.gesture === practiceTarget;
-        setPracticeFeedback(correct ? "✓ Correct! Well done!" : `✗ That looks like "${result.gesture}" — try again`);
-        setPracticeScore(s => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
-        if (correct) {
-            setTimeout(() => {
-                const others = ["0", "1", "2"].filter(g => g !== practiceTarget);
-                setPracticeTarget(others[Math.floor(Math.random() * others.length)]);
-                setPracticeFeedback("");
-            }, 1500);
-        }
-    };
-
     const alignColor = alignScore < 30 ? "var(--danger)" : alignScore < 70 ? "var(--warn)" : "var(--teal)";
+
+    // ── Nav Logo ──────────────────────────────────────────────
+    const NavLogo = () => (
+        <div className="nav-logo" onClick={() => setPage("home")}>
+            <LogoSVG size={36} />
+            <span className="nav-logo-text">Auslan<span>AI</span></span>
+        </div>
+    );
 
     return (
         <>
             <style>{css}</style>
             <canvas ref={canvasRef} style={{ display: "none" }} />
+
             {/* NAV */}
             <nav>
-                <div className="nav-logo">AuslanAI</div>
+                <NavLogo />
                 <ul className="nav-links">
                     <li><a href="#" onClick={() => setPage("home")}>Home</a></li>
                     <li><a href="#" onClick={() => setPage("demo")}>Demo</a></li>
@@ -672,10 +675,10 @@ export default function App() {
                         <div className="section-title">Everything you need<br />to communicate.</div>
                         <div className="features-grid">
                             {[
-                                { icon: "🎯", title: "Hand Alignment Guide", desc: "Visual hand outline helps you position perfectly before detection begins. Real-time alignment score." },
+                                { icon: "🎯", title: "Hand Alignment Guide", desc: "Visual box guide helps you position perfectly before detection begins. Real-time alignment score." },
                                 { icon: "⚡", title: "Real-Time Detection", desc: "Instant gesture recognition from your webcam with confidence score and smooth prediction." },
-                                { icon: "📚", title: "Gesture Library", desc: "Learn all supported gestures with visual guides, tips, and step-by-step instructions." },
-                                { icon: "🏆", title: "Practice Mode", desc: "Interactive quiz that challenges you to perform specific gestures and tracks your score." },
+                                { icon: "📚", title: "Gesture Library", desc: "Learn all 6 supported American digit gestures with visual guides, tips, and step-by-step instructions." },
+                                { icon: "🏆", title: "Practice Mode", desc: "Interactive challenge that auto-detects your gestures and tracks your score seamlessly." },
                                 { icon: "📊", title: "Detection History", desc: "View your recent detections with timestamps and confidence scores in a live log." },
                                 { icon: "🔬", title: "Research Backed", desc: "Published in Social Science Review Archives 2025. Hybrid CNN+RF architecture for superior accuracy." },
                             ].map(f => (
@@ -689,7 +692,10 @@ export default function App() {
                     </section>
 
                     <footer>
-                        <span className="footer-logo">AuslanAI</span>
+                        <div className="footer-logo-wrap">
+                            <LogoSVG size={28} />
+                            <span className="footer-logo-text">AuslanAI</span>
+                        </div>
                         <p>Built by Shahnaz Aqsa Qambrani, Faiza Ahmed Dahri & Shabana Bhatti</p>
                         <p style={{ marginTop: 8 }}>University of Sufism and Modern Sciences, Bhitshah · 2025</p>
                     </footer>
@@ -701,7 +707,7 @@ export default function App() {
                 <section className="demo-section" style={{ paddingTop: 120 }}>
                     <div className="section-label">Live Demo</div>
                     <div className="section-title">See it in action.</div>
-                    <p className="section-sub">Position your hand inside the outline guide, hold steady, and watch the AI recognize your gesture in real time.</p>
+                    <p className="section-sub">Position your hand inside the dashed box guide and watch the AI recognize your gesture in real time.</p>
 
                     <div className="demo-container">
                         {/* Camera */}
@@ -720,20 +726,15 @@ export default function App() {
                                     </div>
                                 )}
                                 {camOn && (
-                                    <>
-                                        <div className="hand-guide">
-                                            <HandSVG aligned={alignScore >= 70} />
+                                    <div className="align-bar">
+                                        <span className="align-bar-text" style={{ color: alignColor, fontSize: 12 }}>
+                                            {alignScore < 30 ? "⚠ Move hand into frame" : alignScore < 70 ? "◎ Keep aligning…" : "✓ Hand aligned!"}
+                                        </span>
+                                        <div className="align-progress">
+                                            <div className="align-fill" style={{ width: `${alignScore}%`, background: alignColor }} />
                                         </div>
-                                        <div className="align-bar">
-                                            <span className="align-bar-text" style={{ color: alignColor, fontSize: 12 }}>
-                                                {alignScore < 30 ? "⚠ Move hand into frame" : alignScore < 70 ? "◎ Keep aligning…" : "✓ Hand aligned!"}
-                                            </span>
-                                            <div className="align-progress">
-                                                <div className="align-fill" style={{ width: `${alignScore}%`, background: alignColor }} />
-                                            </div>
-                                            <span style={{ fontSize: 12, color: alignColor, fontWeight: 600, minWidth: 36 }}>{alignScore}%</span>
-                                        </div>
-                                    </>
+                                        <span style={{ fontSize: 12, color: alignColor, fontWeight: 600, minWidth: 36 }}>{alignScore}%</span>
+                                    </div>
                                 )}
                             </div>
                             <div style={{ padding: "16px" }}>
@@ -744,29 +745,8 @@ export default function App() {
                             </div>
                         </div>
 
-                        {/* Result Panel */}
+                        {/* Result Panel — backend status hidden from UI, only console */}
                         <div className="result-panel">
-                            {/* Backend Status Banner */}
-                            {backendStatus !== "connected" && (
-                                <div style={{
-                                    padding: "12px 16px",
-                                    borderRadius: "var(--radius-sm)",
-                                    fontSize: 13,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 10,
-                                    background: backendStatus === "error" ? "rgba(255,71,87,0.08)" : "rgba(255,179,71,0.08)",
-                                    border: `1px solid ${backendStatus === "error" ? "rgba(255,71,87,0.25)" : "rgba(255,179,71,0.25)"}`,
-                                    color: backendStatus === "error" ? "var(--danger)" : "var(--warn)"
-                                }}>
-                                    {backendStatus === "waking" ? "⏳ Waking up AI backend (may take ~30s on first load)…" : "❌ Backend unreachable — check Hugging Face Space is running"}
-                                </div>
-                            )}
-                            {backendStatus === "connected" && (
-                                <div style={{ padding: "10px 16px", borderRadius: "var(--radius-sm)", fontSize: 13, background: "rgba(0,212,170,0.08)", border: "1px solid rgba(0,212,170,0.2)", color: "var(--teal)" }}>
-                                    ✅ Backend connected
-                                </div>
-                            )}
                             <div className="result-card">
                                 <div style={{ fontSize: 12, color: "var(--muted)", fontWeight: 600, letterSpacing: "0.5px", marginBottom: 4 }}>DETECTED GESTURE</div>
                                 <div className="gesture-display">
@@ -794,7 +774,7 @@ export default function App() {
                                 </div>
 
                                 <div className={`alert-box${status === "alert" ? " show" : ""}`} style={{ marginTop: 16 }}>
-                                    ⚠ Please position your hand inside the outline guide and hold steady.
+                                    ⚠ Please position your hand inside the box guide and hold steady.
                                 </div>
                             </div>
 
@@ -848,12 +828,15 @@ export default function App() {
                     {activeGesture && (
                         <div style={{ marginTop: 32, background: "var(--card)", border: "1px solid var(--teal)", borderRadius: "var(--radius)", padding: "32px" }}>
                             {(() => {
-                                const g = GESTURES.find(x => x.num === activeGesture); return (
+                                const g = GESTURES.find(x => x.num === activeGesture);
+                                return (
                                     <>
                                         <div style={{ display: "flex", gap: 24, alignItems: "center", flexWrap: "wrap" }}>
                                             <div style={{ fontSize: 80 }}>{g.emoji}</div>
                                             <div>
-                                                <div style={{ fontFamily: "var(--font-head)", fontSize: 32, fontWeight: 800, color: "var(--teal)" }}>Gesture {g.num} — {g.name}</div>
+                                                <div style={{ fontFamily: "var(--font-head)", fontSize: 32, fontWeight: 800, color: "var(--teal)" }}>
+                                                    Gesture {g.num} — {g.name}
+                                                </div>
                                                 <div style={{ color: "var(--muted)", marginTop: 8, maxWidth: 500, lineHeight: 1.7 }}>{g.tip}</div>
                                             </div>
                                         </div>
@@ -875,16 +858,21 @@ export default function App() {
                 <section className="practice-section" style={{ paddingTop: 120 }}>
                     <div className="section-label">Practice Mode</div>
                     <div className="section-title">Test your skills.</div>
-                    <p className="section-sub">Start your camera, perform the requested gesture, and hit Check!</p>
+                    <p className="section-sub">Start your camera, perform the requested gesture — it will be detected automatically!</p>
 
                     <div className="practice-layout">
-                        <div className="practice-card">
+                        <div className={`practice-card${practiceFlash ? " flash-correct" : ""}`}>
                             <div className="practice-prompt">Show this gesture:</div>
                             <div className="practice-target">{practiceTarget}</div>
                             <div style={{ color: "var(--muted)", fontSize: 15 }}>
                                 {GESTURES.find(g => g.num === practiceTarget)?.name} — {GESTURES.find(g => g.num === practiceTarget)?.emoji}
                             </div>
-                            <div className="practice-feedback" style={{ color: practiceFeedback.startsWith("✓") ? "var(--teal)" : practiceFeedback ? "var(--danger)" : "transparent" }}>
+                            <div
+                                className="practice-feedback"
+                                style={{
+                                    color: practiceFeedback.startsWith("✓") ? "var(--teal)" : practiceFeedback ? "var(--danger)" : "transparent",
+                                }}
+                            >
                                 {practiceFeedback || "."}
                             </div>
                             <div className="score-row">
@@ -900,13 +888,6 @@ export default function App() {
                                     ? <button className="cam-btn start" style={{ width: "auto", padding: "12px 28px" }} onClick={startCamera}>▶ Start Camera</button>
                                     : <button className="cam-btn stop" style={{ width: "auto", padding: "12px 28px" }} onClick={stopCamera}>■ Stop</button>
                                 }
-                                <button
-                                    onClick={checkPractice}
-                                    disabled={!result}
-                                    style={{ background: "var(--teal)", color: "#000", border: "none", borderRadius: "var(--radius-sm)", padding: "12px 28px", fontSize: 14, fontWeight: 600, cursor: result ? "pointer" : "not-allowed", opacity: result ? 1 : 0.4, fontFamily: "var(--font-body)" }}
-                                >
-                                    ✓ Check Gesture
-                                </button>
                                 <button
                                     onClick={() => { setPracticeScore({ correct: 0, total: 0 }); setPracticeFeedback(""); }}
                                     style={{ background: "transparent", color: "var(--muted)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", padding: "12px 24px", fontSize: 14, cursor: "pointer", fontFamily: "var(--font-body)" }}
