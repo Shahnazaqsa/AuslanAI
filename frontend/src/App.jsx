@@ -1,5 +1,112 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
+// ── How-To Guide Steps ─────────────────────────────────────
+const GUIDE_STEPS = [
+    {
+        emoji: "📷",
+        name: "Allow Camera",
+        title: "Allow camera access",
+        desc: "Click 'Start Camera' and allow browser permission. Your webcam will activate — no data is stored or uploaded anywhere.",
+        tips: ["Use Chrome or Firefox", "Click 'Allow' when prompted", "Good lighting recommended"],
+    },
+    {
+        emoji: "✋",
+        name: "Position Hand",
+        title: "Place hand in the box",
+        desc: "Hold your hand inside the dashed green box on screen. Keep your wrist steady and face your palm toward the camera.",
+        tips: ["Plain background works best", "Keep hand centered in box", "Watch the alignment bar fill up"],
+    },
+    {
+        emoji: "✋",
+        name: "Make Gesture",
+        title: "Perform a gesture",
+        desc: "Show any digit from 0 to 5 using Sign Language hand shape. Hold still for a moment and let the AI detect it.",
+        tips: ["Extend fingers clearly", "Hold steady 1–2 seconds", "Try all 6 digits: 0 to 5"],
+    },
+    {
+        emoji: "🏆",
+        name: "Practice",
+        title: "Practice & improve",
+        desc: "Go to Practice mode — the app will ask you to show a specific gesture. It auto-detects when you get it right and moves to the next one!",
+        tips: ["Score tracked automatically", "No button needed to check", "Try to hit 100% accuracy"],
+    },
+];
+
+function HowToGuide() {
+    const [current, setCurrent] = useState(0);
+    const s = GUIDE_STEPS[current];
+    return (
+        <div style={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "32px", marginBottom: "40px" }}>
+            <div style={{ textAlign: "center", marginBottom: "28px" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "var(--teal)", letterSpacing: "2px", textTransform: "uppercase", marginBottom: 8 }}>How to use</div>
+                <div style={{ fontFamily: "var(--font-head)", fontSize: 22, fontWeight: 800, color: "var(--white)", letterSpacing: "-0.5px" }}>Get started in 4 easy steps</div>
+            </div>
+
+            {/* Step icons row */}
+            <div style={{ display: "flex", position: "relative", marginBottom: 28 }}>
+                <div style={{ position: "absolute", top: 35, left: 0, right: 0, height: 2, background: "rgba(255,255,255,0.06)", zIndex: 0 }}>
+                    <div style={{ height: "100%", background: "var(--teal)", borderRadius: 2, transition: "width 0.6s cubic-bezier(0.4,0,0.2,1)", width: current === 0 ? "0%" : `${(current / (GUIDE_STEPS.length - 1)) * 100}%` }} />
+                </div>
+                {GUIDE_STEPS.map((st, i) => {
+                    const isDone = i < current;
+                    const isActive = i === current;
+                    return (
+                        <div key={i} onClick={() => setCurrent(i)} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", position: "relative", zIndex: 1, cursor: "pointer", padding: "0 8px" }}>
+                            <div style={{
+                                width: 70, height: 70, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                                marginBottom: 12, position: "relative", transition: "all 0.35s",
+                                background: isDone ? "var(--teal)" : isActive ? "rgba(0,212,170,0.1)" : "var(--surface)",
+                                border: `2px solid ${isDone || isActive ? "var(--teal)" : "rgba(255,255,255,0.1)"}`,
+                            }}>
+                                <span style={{ position: "absolute", top: -8, right: -2, fontSize: 10, fontWeight: 800, color: isActive || isDone ? "var(--teal)" : "var(--muted)", background: "var(--card)", padding: "2px 5px", borderRadius: 999, border: `1px solid ${isActive || isDone ? "rgba(0,212,170,0.3)" : "rgba(255,255,255,0.07)"}` }}>{i + 1}</span>
+                                <span style={{ fontSize: 26, filter: isDone ? "brightness(0) invert(1)" : "none", transform: isActive ? "scale(1.15)" : "scale(1)", transition: "transform 0.3s" }}>{isDone ? "✓" : st.emoji}</span>
+                            </div>
+                            <span style={{ fontSize: 11, fontWeight: 600, color: isActive ? "var(--white)" : isDone ? "var(--teal)" : "var(--muted)", letterSpacing: "0.3px" }}>{st.name}</span>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* Detail card */}
+            <div style={{ background: "var(--surface)", border: "1px solid rgba(0,212,170,0.2)", borderRadius: "var(--radius-sm)", padding: "24px", display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
+                <div style={{ width: 72, height: 72, borderRadius: 14, background: "rgba(0,212,170,0.1)", border: "1px solid rgba(0,212,170,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36, flexShrink: 0 }}>{s.emoji}</div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, color: "var(--teal)", letterSpacing: "1.5px", textTransform: "uppercase", marginBottom: 6 }}>Step {current + 1} of {GUIDE_STEPS.length}</div>
+                    <div style={{ fontFamily: "var(--font-head)", fontSize: 18, fontWeight: 800, color: "var(--white)", marginBottom: 8 }}>{s.title}</div>
+                    <div style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.7, marginBottom: 14 }}>{s.desc}</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {s.tips.map(t => (
+                            <span key={t} style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 999, padding: "4px 12px", fontSize: 12, color: "var(--muted)" }}>✓ {t}</span>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Nav */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 20 }}>
+                <button onClick={() => setCurrent(c => Math.max(0, c - 1))} disabled={current === 0}
+                    style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", color: "var(--muted)", padding: "10px 20px", borderRadius: "var(--radius-sm)", fontFamily: "var(--font-body)", fontSize: 13, cursor: current === 0 ? "not-allowed" : "pointer", opacity: current === 0 ? 0.3 : 1 }}>
+                    ← Previous
+                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                    {GUIDE_STEPS.map((_, i) => (
+                        <button key={i} onClick={() => setCurrent(i)} style={{ width: i === current ? 24 : 8, height: 8, borderRadius: i === current ? 4 : "50%", background: i === current ? "var(--teal)" : "rgba(255,255,255,0.1)", border: "none", padding: 0, cursor: "pointer", transition: "all 0.3s" }} />
+                    ))}
+                </div>
+                <button onClick={() => setCurrent(c => Math.min(GUIDE_STEPS.length - 1, c + 1))} disabled={current === GUIDE_STEPS.length - 1}
+                    style={{ background: "rgba(0,212,170,0.12)", border: "1px solid rgba(0,212,170,0.3)", color: "var(--teal)", padding: "10px 20px", borderRadius: "var(--radius-sm)", fontFamily: "var(--font-body)", fontSize: 13, fontWeight: 600, cursor: current === GUIDE_STEPS.length - 1 ? "not-allowed" : "pointer", opacity: current === GUIDE_STEPS.length - 1 ? 0.3 : 1 }}>
+                    Next →
+                </button>
+            </div>
+
+            {/* Progress bar */}
+            <div style={{ height: 3, background: "rgba(255,255,255,0.06)", borderRadius: 2, marginTop: 16, overflow: "hidden" }}>
+                <div style={{ height: "100%", background: "var(--teal)", borderRadius: 2, width: `${((current + 1) / GUIDE_STEPS.length) * 100}%`, transition: "width 0.4s" }} />
+            </div>
+        </div>
+    );
+}
+
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
 
@@ -708,6 +815,8 @@ export default function App() {
                     <div className="section-label">Live Demo</div>
                     <div className="section-title">See it in action.</div>
                     <p className="section-sub">Position your hand inside the dashed box guide and watch the AI recognize your gesture in real time.</p>
+
+                    <HowToGuide />
 
                     <div className="demo-container">
                         {/* Camera */}
