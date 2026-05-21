@@ -696,7 +696,7 @@ export default function App() {
                             <LogoSVG size={28} />
                             <span className="footer-logo-text">AuslanAI</span>
                         </div>
-                        <p>Built by Shahnaz Aqsa Qambrani, Faiza Ahmed Dahri & Shabana Bhatti</p>
+                        <p>Built by Shahnaz Aqsa Qambrani</p>
                         <p style={{ marginTop: 8 }}>University of Sufism and Modern Sciences, Bhitshah · 2025</p>
                     </footer>
                 </>
